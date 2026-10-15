@@ -22,7 +22,7 @@ export default function LoginPage() {
       const res = await authApi.login(email, password);
       const { token, user } = res.data;
       if (!token || !user) {
-        setError('登录请求没有得到平台的正常回复。请在 Safari 重新打开演示链接，完成邮箱验证码后再登录。');
+        setError('登录请求没有得到平台的正常回复。请在 Safari 刷新演示链接后重试。');
         return;
       }
       localStorage.setItem('bidmaster_token', token);
@@ -36,9 +36,9 @@ export default function LoginPage() {
         if (typeof detail === 'string') {
           setError(detail);
         } else if (err.response?.status === 403 || err.response?.status === 302 || err.response?.status === 401) {
-          setError('登录请求被外层访问验证拦住了。请在 Safari 重新打开演示链接，完成邮箱验证码后再登录。');
+          setError('登录请求被临时链接拦住了。请在 Safari 刷新演示链接后重试。');
         } else if (!err.response) {
-          setError('手机没有连通登录服务。请在 Safari 重新打开演示链接，检查网络后重试。');
+          setError('手机没有连通登录服务。请在 Safari 刷新演示链接，检查网络后重试。');
         } else {
           setError(`平台暂时无法处理登录（HTTP ${err.response.status}）。请稍后重试。`);
         }
@@ -108,7 +108,7 @@ export default function LoginPage() {
               fontSize: '13px', fontWeight: 500, color: '#374151',
               display: 'block', marginBottom: '6px',
             }}>
-              平台登录邮箱（不是收验证码的邮箱）
+              管理员邮箱
             </label>
             <input
               type="email"
@@ -155,7 +155,7 @@ export default function LoginPage() {
           </div>
 
           <p style={{ marginTop: -12, marginBottom: 20, fontSize: 12, color: '#64748b', lineHeight: 1.6 }}>
-            邮箱验证码只用于打开演示链接。这里请使用上方平台邮箱；演示密码在电脑的 Duncan-Pro 文件夹中双击“查看演示密码.bat”查看。
+            演示密码在电脑的 Duncan-Pro 文件夹中双击“查看演示密码.bat”查看。
           </p>
 
           {error && (
