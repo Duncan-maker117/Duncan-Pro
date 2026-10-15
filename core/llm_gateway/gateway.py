@@ -110,6 +110,11 @@ class LLMGateway:
                     "temperature": temperature,
                     "max_tokens": effective_max_tokens,
                 }
+                # Structured tender extraction needs a final JSON answer quickly.
+                # DeepSeek Flash currently defaults to thinking mode, which can
+                # consume the output budget before producing message.content.
+                if current_model.startswith("deepseek-"):
+                    kwargs["extra_body"] = {"thinking": {"type": "disabled"}}
                 if response_format:
                     kwargs["response_format"] = response_format
 

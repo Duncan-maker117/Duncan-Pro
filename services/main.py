@@ -68,7 +68,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="BidMaster Pro API",
+    title="Duncan pro API",
     description="全流程智能招投标平台",
     version="0.1.0",
     lifespan=lifespan,
@@ -98,6 +98,20 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type", "Accept", "Origin", "User-Agent", "X-Requested-With", "X-API-Key"],
     max_age=600,
 )
+
+
+@app.middleware("http")
+async def demo_login_guard(request: Request, call_next):
+    """Require application login for public demo API routes."""
+    if os.environ.get("BMP_DEMO_REQUIRE_AUTH") == "true" and request.url.path.startswith("/api/"):
+        if request.method != "OPTIONS" and request.url.path not in {"/api/auth/login", "/api/health"}:
+            from services.routers.auth import verify_token
+
+            authorization = request.headers.get("Authorization", "")
+            token = authorization[7:].strip() if authorization.startswith("Bearer ") else ""
+            if not token or not verify_token(token):
+                return JSONResponse(status_code=401, content={"detail": "请先登录"})
+    return await call_next(request)
 
 
 @app.exception_handler(LLMGatewayError)
@@ -132,13 +146,14 @@ async def project_not_found_handler(request: Request, exc: ProjectNotFoundError)
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    tb = traceback.format_exc()
+    logging.getLogger("duncanpro").exception("请求处理失败: %s", request.url.path)
+    debug = get_settings().debug
     return JSONResponse(
         status_code=500,
         content={
             "detail": "服务器内部错误",
-            "error": str(exc),
-            "traceback": tb if get_settings().debug else None,
+            "error": str(exc) if debug else None,
+            "traceback": traceback.format_exc() if debug else None,
         },
     )
 
@@ -162,7 +177,7 @@ app.include_router(api_key.router, prefix="/api/api-keys", tags=["API Key 管理
 
 @app.get("/api/health")
 async def health_check():
-    return {"status": "ok", "app": "BidMaster Pro", "version": "0.1.0", "db_ready": is_db_ready()}
+    return {"status": "ok", "app": "Duncan pro", "version": "0.1.0", "db_ready": is_db_ready()}
 
 
 @app.get("/api/stats")

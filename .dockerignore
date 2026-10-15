@@ -42,6 +42,7 @@ Desktop.ini
 
 # ===== 运行时数据（通过 volume 挂载，不打入镜像）=====
 uploads/
+samples/
 projects/
 chroma_db/
 

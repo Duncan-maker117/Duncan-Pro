@@ -42,7 +42,7 @@ class InterpretExportSkill(Skill):
 
     def _to_markdown(self, data: dict, project_name: str) -> str:
         lines = []
-        lines.append("# 招标文件解读报告")
+        lines.append("# Duncan pro 招标文件解读报告")
         lines.append("")
         lines.append(f"**项目名称**: {project_name}")
         lines.append(f"**生成时间**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
@@ -50,7 +50,13 @@ class InterpretExportSkill(Skill):
 
         dimensions = data.get("dimensions", data)
         if isinstance(dimensions, dict):
-            for dim_id, dim_data in dimensions.items():
+            preferred_order = [
+                "project_info", "buyer_info", "qualification", "scoring", "timeline",
+                "opening", "deposit", "disqualification", "technical", "evaluation",
+                "commercial", "contract", "risk", "competition", "contacts",
+            ]
+            order = {key: index for index, key in enumerate(preferred_order)}
+            for dim_id, dim_data in sorted(dimensions.items(), key=lambda item: order.get(item[0], len(order))):
                 dim_name = self._dimension_display_name(dim_id)
                 lines.append(f"## {dim_name}")
                 lines.append("")
@@ -114,19 +120,25 @@ class InterpretExportSkill(Skill):
                     lines.append("")
 
         lines.append("---")
-        lines.append("*报告由 BidMaster Pro 自动生成*")
+        lines.append("*由 Duncan pro 生成；基于 BidMaster Pro（AGPL-3.0）改编。AI 结果请以招标文件原文为准。*")
 
         return "\n".join(lines)
 
     def _to_html(self, data: dict, project_name: str) -> str:
+        from html import escape
+        import re
+
         md_content = self._to_markdown(data, project_name)
+        def inline(text: str) -> str:
+            safe = escape(text)
+            return re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", safe)
 
         html_parts = [
             "<!DOCTYPE html>",
-            "<html><head><meta charset='utf-8'>",
-            f"<title>解读报告 - {project_name}</title>",
+            "<html lang='zh-CN'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'>",
+            f"<title>解读报告 - {escape(project_name)}</title>",
             "<style>",
-            "body { font-family: 'Microsoft YaHei', sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; }",
+            "body { font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif; max-width: 900px; margin: 0 auto; padding: 24px; color: #1e293b; line-height: 1.7; overflow-wrap: anywhere; }",
             "h1 { color: #1a56db; border-bottom: 2px solid #1a56db; padding-bottom: 8px; }",
             "h2 { color: #374151; margin-top: 24px; border-left: 4px solid #1a56db; padding-left: 12px; }",
             "h3 { color: #4b5563; }",
@@ -135,6 +147,7 @@ class InterpretExportSkill(Skill):
             "th { background: #f3f4f6; font-weight: 600; }",
             "blockquote { border-left: 4px solid #ef4444; background: #fef2f2; padding: 8px 16px; margin: 8px 0; }",
             "hr { border: none; border-top: 1px solid #e5e7eb; margin: 24px 0; }",
+            "li { margin: 6px 0; } p { margin: 10px 0; } @media print { body { max-width: none; padding: 0; } h2 { break-after: avoid; } li { break-inside: avoid; } }",
             ".risk-critical { color: #dc2626; } .risk-high { color: #ea580c; }",
             ".risk-medium { color: #d97706; } .risk-low { color: #059669; }",
             "</style></head><body>",
@@ -142,19 +155,19 @@ class InterpretExportSkill(Skill):
 
         for line in md_content.split("\n"):
             if line.startswith("# "):
-                html_parts.append(f"<h1>{line[2:]}</h1>")
+                html_parts.append(f"<h1>{escape(line[2:])}</h1>")
             elif line.startswith("## "):
-                html_parts.append(f"<h2>{line[3:]}</h2>")
+                html_parts.append(f"<h2>{escape(line[3:])}</h2>")
             elif line.startswith("### "):
-                html_parts.append(f"<h3>{line[4:]}</h3>")
+                html_parts.append(f"<h3>{escape(line[4:])}</h3>")
             elif line.startswith("> "):
-                html_parts.append(f"<blockquote>{line[2:]}</blockquote>")
+                html_parts.append(f"<blockquote>{inline(line[2:])}</blockquote>")
             elif line.startswith("- "):
-                html_parts.append(f"<li>{line[2:]}</li>")
+                html_parts.append(f"<ul><li>{inline(line[2:])}</li></ul>")
             elif line.startswith("---"):
                 html_parts.append("<hr>")
             elif line.strip():
-                html_parts.append(f"<p>{line}</p>")
+                html_parts.append(f"<p>{inline(line)}</p>")
 
         html_parts.append("</body></html>")
         return "\n".join(html_parts)
@@ -180,6 +193,31 @@ class InterpretExportSkill(Skill):
         return name_map.get(dim_id, dim_id)
 
     def _key_display_name(self, key: str) -> str:
+        labels = {
+            "project_name": "项目名称", "project_code": "项目编号", "procurement_method": "招标方式",
+            "budget_amount": "项目金额", "procurement_unit": "招标人", "project_overview": "项目概况",
+            "unit_name": "单位名称", "address": "地址", "contact_person": "联系人", "contact_phone": "电话",
+            "supervisor_dept": "主管部门", "qualification_level": "资质等级", "performance_requirement": "业绩要求",
+            "personnel_requirement": "人员要求", "other_requirements": "其他要求", "technical_parameters": "技术参数",
+            "technical_standards": "技术标准", "service_requirements": "服务要求", "acceptance_criteria": "验收标准",
+            "evaluation_method": "评标方法", "scoring_items": "评分细则", "business_weight": "商务分权重",
+            "technical_weight": "技术分权重", "price_weight": "价格分权重", "amount": "金额",
+            "payment_method": "缴纳方式", "deadline": "截止时间", "refund_conditions": "退还条件",
+            "opening_time": "开标时间", "opening_location": "开标地点", "submission_method": "递交方式",
+            "submission_deadline": "投标截止时间", "sealing_requirements": "密封要求",
+            "payment_terms": "付款条款", "breach_liability": "违约责任", "warranty_period": "质保期",
+            "dispute_resolution": "争议解决", "potential_risks": "潜在风险", "unreasonable_requirements": "不合理要求",
+            "buyer_contact_person": "招标人联系人", "buyer_contact_info": "招标人电话",
+            "agency_contact_person": "代理机构联系人", "agency_contact_info": "代理机构电话",
+            "qualification_score": "资质评分", "performance_score": "业绩评分", "reputation_score": "信誉评分",
+            "other_items": "其他评分项", "method": "方法", "evaluation_process": "评标流程",
+            "committee_composition": "评委组成",
+            "mandatory_conditions": "强制条件", "disqualification_clauses": "废标条款",
+            "substantive_requirements": "实质性要求", "name": "名称", "description": "说明",
+            "type": "类型", "clause_number": "条款号", "score": "分值",
+        }
+        if key in labels:
+            return labels[key]
         if "_" in key:
             parts = key.split("_")
             return "".join(p.capitalize() for p in parts)

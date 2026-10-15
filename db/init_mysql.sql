@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS documents (
     file_path VARCHAR(500) NOT NULL COMMENT '文件存储路径',
     original_name VARCHAR(255) COMMENT '上传时的原始文件名',
     file_size INT COMMENT '文件大小（字节）',
-    parsed_content TEXT COMMENT '文档解析后的文本内容',
+    parsed_content MEDIUMTEXT COMMENT '文档解析后的文本内容',
     doc_metadata JSON COMMENT '文档元数据（页数、表格数、章节结构等）',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '文档上传时间',
     INDEX idx_documents_project (project_id) COMMENT '项目ID索引，加速项目文档查询',

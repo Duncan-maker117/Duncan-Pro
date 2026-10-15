@@ -343,7 +343,7 @@ class HotspotItem(Base):
 
     id = Column(String(36), primary_key=True, default=_uuid_default)
     title = Column(String(500), nullable=False)
-    url = Column(String(1000), nullable=False, index=True)
+    url = Column(String(700), nullable=False, index=True)
     source = Column(String(500), default="")
     sources = Column(JSON, default=list)
     pub_date = Column(String(50), nullable=True)

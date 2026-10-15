@@ -2,6 +2,11 @@
 .env
 .env.local
 .env.*.local
+.secrets/
+samples/*
+!samples/来源.txt
+packages/desktop/renderer/public/duncan-pro-source.zip
+docker/docker-compose.local.yml
 
 # ===== Python =====
 __pycache__/

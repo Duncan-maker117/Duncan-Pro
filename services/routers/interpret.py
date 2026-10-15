@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,6 +10,7 @@ from sqlalchemy import select
 from services.database import get_db
 from services.models import Project, Document, Analysis, ProjectStatus
 from services.llm_factory import get_llm_gateway
+from core.skill_engine.base import SkillContext
 
 router = APIRouter()
 
@@ -40,7 +42,8 @@ async def upload_tender_file(
         if len(content) > MAX_FILE_SIZE:
             raise HTTPException(status_code=400, detail=f"文件大小超过限制({MAX_FILE_SIZE // 1024 // 1024}MB)")
 
-        file_path = upload_dir / file.filename
+        safe_name = Path(file.filename.replace('\\', '/')).name
+        file_path = upload_dir / f"{uuid4().hex}_{safe_name}"
         with open(file_path, "wb") as f:
             f.write(content)
 
@@ -131,13 +134,16 @@ async def parse_tender_file(project_id: str, db: AsyncSession = Depends(get_db))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"文件解析失败: {e}")
 
+    if not parsed.text.strip():
+        raise HTTPException(status_code=422, detail="此文件未提取到文字，可能是扫描版 PDF；请使用带文字层的文件")
+
     doc.parsed_content = parsed.text
     doc.doc_metadata = parsed.metadata
     project.status = ProjectStatus.INTERPRETING.value
     await db.flush()
 
-    detector = SectionDetector(llm_gateway=get_llm_gateway())
-    sections = await detector.detect_async(parsed.text)
+    detector = SectionDetector()
+    sections = detector.detect(parsed.text)
 
     return {
         "project_id": project_id,
@@ -174,10 +180,14 @@ async def get_analysis(project_id: str, db: AsyncSession = Depends(get_db)):
     has_documents = len(doc_list) > 0
     has_parsed = any(d.parsed_content is not None for d in doc_list)
 
+    dimensions = analysis.dimensions if analysis and isinstance(analysis.dimensions, dict) else {}
+    failed_dimensions = [key for key, value in dimensions.items() if isinstance(value, dict) and "error" in value]
+    completed_dimensions = len(dimensions) - len(failed_dimensions)
     return {
         "has_documents": has_documents,
         "has_parsed": has_parsed,
-        "has_analysis": analysis is not None and analysis.dimensions is not None,
+        "has_analysis": completed_dimensions > 0,
+        "failed_dimensions": failed_dimensions,
         "analysis": {
             "dimensions": analysis.dimensions if analysis else None,
             "scoring_matrix": analysis.scoring_matrix if analysis else None,
@@ -193,6 +203,10 @@ async def get_analysis(project_id: str, db: AsyncSession = Depends(get_db)):
 
 @router.post("/interpret/{project_id}")
 async def interpret_tender(project_id: str, db: AsyncSession = Depends(get_db)):
+    return await _execute_interpret(project_id, db)
+
+
+async def _execute_interpret(project_id: str, db: AsyncSession):
     result = await db.execute(select(Project).where(Project.id == project_id))
     project = result.scalar_one_or_none()
     if not project:
@@ -247,6 +261,41 @@ async def interpret_tender(project_id: str, db: AsyncSession = Depends(get_db)):
     }
 
 
+async def _run_interpret_task(project_id: str):
+    from services.database import async_session
+
+    async with async_session()() as db:
+        result = await _execute_interpret(project_id, db)
+        if not result["success"]:
+            raise RuntimeError(result["error"] or "解读失败")
+        await db.commit()
+        return {"success": True, "warnings": result["warnings"]}
+
+
+@router.post("/task/{project_id}")
+async def submit_interpret_task(project_id: str, db: AsyncSession = Depends(get_db)):
+    from core.task_manager import TaskManager
+
+    project = (await db.execute(select(Project).where(Project.id == project_id))).scalar_one_or_none()
+    if not project:
+        raise HTTPException(status_code=404, detail="项目不存在")
+    doc = (await db.execute(select(Document).where(Document.id == project.tender_doc_id))).scalar_one_or_none()
+    if not doc or not doc.parsed_content:
+        raise HTTPException(status_code=400, detail="请先解析招标文件")
+    task = await TaskManager.instance().submit("tender_interpret", _run_interpret_task, project_id)
+    return {"task_id": task.task_id, "status": task.status.value}
+
+
+@router.get("/task/{task_id}")
+async def get_interpret_task(task_id: str):
+    from core.task_manager import TaskManager
+
+    task = TaskManager.instance().get_task(task_id)
+    if not task or task.task_type != "tender_interpret":
+        raise HTTPException(status_code=404, detail="任务不存在或已过期")
+    return task.to_dict()
+
+
 @router.post("/scoring-matrix/{project_id}")
 async def build_scoring_matrix(project_id: str, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Project).where(Project.id == project_id))
@@ -258,7 +307,10 @@ async def build_scoring_matrix(project_id: str, db: AsyncSession = Depends(get_d
         select(Analysis).where(Analysis.project_id == project.id)
     )
     analysis = analysis_result.scalar_one_or_none()
-    if not analysis or not analysis.dimensions:
+    if not analysis or not analysis.dimensions or all(
+        isinstance(value, dict) and "error" in value
+        for value in analysis.dimensions.values()
+    ):
         raise HTTPException(status_code=400, detail="请先完成招标解读")
 
     from services.interpret.skills.scoring_matrix_skill import ScoringMatrixSkill
@@ -335,7 +387,10 @@ async def export_interpret(
         select(Analysis).where(Analysis.project_id == project.id)
     )
     analysis = analysis_result.scalar_one_or_none()
-    if not analysis or not analysis.dimensions:
+    if not analysis or not analysis.dimensions or all(
+        isinstance(value, dict) and "error" in value
+        for value in analysis.dimensions.values()
+    ):
         raise HTTPException(status_code=400, detail="请先完成招标解读")
 
     from services.interpret.skills.interpret_export_skill import InterpretExportSkill

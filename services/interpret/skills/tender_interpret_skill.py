@@ -310,10 +310,12 @@ def _normalize_key(dim_id: str, key: str) -> str:
 
 def _clean_value(value):
     if isinstance(value, str):
-        value = re.sub(r"(.)\1{3,}", r"\1", value)
+        # Consecutive digits can be meaningful: 40000万元 must not become 40万元.
         value = re.sub(r"[zZ]{2,}", "", value)
         value = re.sub(r"D\d+D\d*", "", value)
         value = value.strip()
+        if re.search(r"\d{4}\s*年\s*月\s*日", value):
+            return None
         if value and len(value) <= 1 and not value.isalnum():
             return None
     elif isinstance(value, dict):
@@ -385,7 +387,7 @@ class TenderInterpretSkill(Skill):
                             + "\n"
                             "2. 禁止使用中文作为字段名，禁止使用camelCase字段名\n"
                             "3. 字段值必须从招标文件原文中准确提取，不要编造或猜测\n"
-                            "4. 如果文件中确实未提及某项信息，对应字段填null\n"
+                            "4. 如果文件中确实未提及某项信息，或日期仍是‘2026年 月 日’这类占位符，对应字段填null\n"
                             "5. 所有文本内容必须逐字准确复制，不要出现任何字符重复、乱码、截断\n"
                             "6. 不要添加任何Schema中未定义的额外字段\n"
                             f"\n返回格式示例：\n{example_json}"
@@ -409,9 +411,13 @@ class TenderInterpretSkill(Skill):
             dim_id, result = item
             results[dim_id] = result
 
+        successful = sum(1 for value in results.values() if isinstance(value, dict) and "error" not in value)
+        missing = [dim["name"] for dim in DIMENSIONS if dim["id"] not in results or "error" in results[dim["id"]]]
         return SkillResult(
-            success=True,
+            success=successful > 0,
             data={"dimensions": results},
+            error="全部分析项失败，请检查模型密钥、余额与网络后重试" if successful == 0 else None,
+            warnings=[f"以下分析项未完成：{', '.join(missing)}"] if missing else [],
         )
 
     def _build_prompt(self, dimension: dict, text: str) -> str:

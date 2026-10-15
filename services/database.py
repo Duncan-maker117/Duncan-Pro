@@ -4,7 +4,7 @@ import logging
 
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy import event
+from sqlalchemy import event, text
 from core.settings import get_settings
 
 logger = logging.getLogger(__name__)
@@ -70,6 +70,14 @@ async def init_db():
         engine = get_engine()
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
+            if get_settings().db_type == "mysql":
+                column_type = await conn.scalar(text(
+                    "SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS "
+                    "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'documents' "
+                    "AND COLUMN_NAME = 'parsed_content'"
+                ))
+                if column_type == "text":
+                    await conn.execute(text("ALTER TABLE documents MODIFY parsed_content MEDIUMTEXT NULL"))
         _db_ready = True
         logger.info("数据库初始化成功")
     except Exception as e:

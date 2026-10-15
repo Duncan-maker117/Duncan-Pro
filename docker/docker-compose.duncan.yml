@@ -1,0 +1,85 @@
+name: duncanpro
+
+services:
+  mysql:
+    image: mysql:8.0
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci", "--default-authentication-plugin=mysql_native_password"]
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-duncan-local-root}
+      MYSQL_DATABASE: bidmaster
+      MYSQL_USER: bidmaster
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-duncan-local-db}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../db/init_mysql.sql:/docker-entrypoint-initdb.d/init_mysql.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 10s
+      retries: 20
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.api.local
+    environment:
+      BMP_DEBUG: "false"
+      BMP_DEMO_REQUIRE_AUTH: "true"
+      BMP_DB_TYPE: mysql
+      BMP_MYSQL_HOST: mysql
+      BMP_MYSQL_USER: bidmaster
+      BMP_MYSQL_PASSWORD: ${MYSQL_PASSWORD:-duncan-local-db}
+      BMP_MYSQL_DATABASE: bidmaster
+      BMP_REDIS_URL: redis://redis:6379/0
+      BMP_LLM_DEFAULT_MODEL: ${LLM_MODEL:-deepseek/deepseek-flash}
+      BMP_LLM_API_KEY: ${LLM_API_KEY:-}
+      BMP_LLM_API_BASE: https://api.deepseek.com
+      BMP_LLM_FALLBACK_MODES: ""
+      BMP_LLM_MAX_RETRIES: "1"
+      UVICORN_WORKERS: "1"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - projects_data:/app/projects
+      - uploads_data:/app/uploads
+      - chroma_data:/app/chroma_db
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 90s
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.web
+    ports:
+      - "127.0.0.1:8081:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+  redis_data:
+  projects_data:
+  uploads_data:
+  chroma_data:
