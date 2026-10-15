@@ -1,4 +1,4 @@
-﻿param()
+﻿param([string]$AllowedEmail)
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $cloudflared = (Get-Command cloudflared -ErrorAction SilentlyContinue).Source
@@ -17,7 +17,10 @@ try {
 } catch {
     if ($_.Exception.Response.StatusCode -ne 401) { throw }
 }
-$allowedEmail = Read-Host '输入能收到验证码的邮箱（仅这个邮箱可访问）'
-if ($allowedEmail -notmatch '^[^@\s,]+@[^@\s,]+\.[^@\s,]+$') { throw '邮箱格式不正确，未启动临时链接。' }
+if ([string]::IsNullOrWhiteSpace($AllowedEmail)) {
+    $AllowedEmail = Read-Host '输入能收到验证码的邮箱（仅这个邮箱可访问）'
+}
+if ([string]::IsNullOrWhiteSpace($AllowedEmail) -or $AllowedEmail -notmatch '^[^@\s,]+@[^@\s,]+\.[^@\s,]+$') { throw '邮箱格式不正确，未启动临时链接。' }
 Write-Host '临时链接启动中。请复制稍后显示的 https://...trycloudflare.com 地址。关闭此窗口后链接失效。'
-& $cloudflared tunnel --url http://127.0.0.1:8081 --allowed-mail $allowedEmail
+& $cloudflared tunnel --url http://127.0.0.1:8081 --allowed-mail $AllowedEmail
+if ($LASTEXITCODE -ne 0) { throw '临时链接启动失败，请查看上方错误。' }
