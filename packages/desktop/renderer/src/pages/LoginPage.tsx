@@ -8,6 +8,7 @@ export default function LoginPage() {
   const { setUser, setToken } = useAppStore();
   const [email, setEmail] = useState('admin@bidmaster.pro');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -94,7 +95,7 @@ export default function LoginPage() {
               fontSize: '13px', fontWeight: 500, color: '#374151',
               display: 'block', marginBottom: '6px',
             }}>
-              邮箱
+              平台登录邮箱（不是收验证码的邮箱）
             </label>
             <input
               type="email"
@@ -121,7 +122,7 @@ export default function LoginPage() {
               密码
             </label>
             <input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="请输入密码"
@@ -135,7 +136,14 @@ export default function LoginPage() {
               onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
               onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
             />
+            <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ marginTop: 8, background: 'none', border: 0, color: '#2563eb', fontSize: 12, cursor: 'pointer' }}>
+              {showPassword ? '隐藏密码' : '显示密码，核对输入'}
+            </button>
           </div>
+
+          <p style={{ marginTop: -12, marginBottom: 20, fontSize: 12, color: '#64748b', lineHeight: 1.6 }}>
+            邮箱验证码只用于打开演示链接。这里请使用上方平台邮箱；演示密码在电脑的 Duncan-Pro 文件夹中双击“查看演示密码.bat”查看。
+          </p>
 
           {error && (
             <div style={{
