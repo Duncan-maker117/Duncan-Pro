@@ -1,6 +1,6 @@
-# Duncan pro：招标文件解读演示
+# Duncan pro：招标文件解读操作说明
 
-Duncan pro 是在 [BidMaster Pro](https://github.com/guangshu100/BidMaster-Pro) 源码上改编的个人演示版。原仓库和本改版代码适用仓库内的 `LICENSE`（AGPL-3.0）。保留原项目版权与许可证信息。页面和报告的品牌已调整为 Duncan pro；这不代表原作者参与或认可本演示。
+Duncan pro 提供招标文件上传、解读任务和报告下载。许可证见根目录 [`LICENSE`](LICENSE)。
 
 ## 已实现的演示流程
 
