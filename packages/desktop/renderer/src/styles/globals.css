@@ -70,3 +70,44 @@ body {
 .step-slide-in {
   animation: slideInRight 0.25s ease-out;
 }
+
+@media (max-width: 768px) {
+  .app-sidebar {
+    position: fixed !important;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1002;
+    width: min(280px, 85vw) !important;
+    min-width: min(280px, 85vw) !important;
+    transform: translateX(-105%);
+    transition: transform 0.2s ease !important;
+    box-shadow: 4px 0 24px rgba(15, 23, 42, 0.16);
+  }
+  .app-sidebar.mobile-open { transform: translateX(0); }
+  .mobile-menu-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1001;
+    border: 0;
+    background: rgba(15, 23, 42, 0.42);
+  }
+  .app-header { padding: 0 12px !important; }
+  .app-header > div:first-child { min-width: 0; overflow: hidden; }
+  .app-header > div:first-child > div:last-child { min-width: 0; overflow: hidden; }
+  .app-header > div:last-child { flex-shrink: 0; gap: 8px !important; }
+  .app-main { padding: 12px !important; }
+  .interpret-page { min-width: 0; }
+  .interpret-page .step-slide-in { padding: 14px !important; flex-wrap: wrap; }
+  .interpret-page .step-slide-in > div:nth-child(2) { display: none !important; }
+  .interpret-panel { padding: 16px !important; }
+  .interpret-steps { gap: 4px !important; }
+  .interpret-steps > div { padding: 8px 4px !important; font-size: 11px !important; min-width: 0; }
+  .interpret-steps svg { display: none; }
+  .interpret-create-project { flex-wrap: wrap; }
+  .interpret-create-project input { width: 100%; flex-basis: 100%; }
+  .interpret-create-project button { width: 100%; }
+  .interpret-page button { min-height: 36px; }
+  .interpret-page pre { max-width: 100%; overflow-x: auto; }
+  .interpret-page span { min-width: 0; overflow-wrap: anywhere; }
+}

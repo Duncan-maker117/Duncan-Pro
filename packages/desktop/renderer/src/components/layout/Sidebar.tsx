@@ -11,7 +11,6 @@ import {
   ChevronRight,
   AlertCircle,
 } from 'lucide-react';
-import logoImg from '../../assets/logo.png';
 import { useAppStore } from '../../stores/appStore';
 
 const pipelineSteps = [
@@ -63,7 +62,7 @@ function Tooltip({ label, children, show }: { label: string; children: ReactNode
   );
 }
 
-export default function Sidebar() {
+export default function Sidebar({ mobileMenuOpen = false }: { mobileMenuOpen?: boolean }) {
   const location = useLocation();
   const navigate = useNavigate();
   const currentPath = location.pathname;
@@ -114,6 +113,7 @@ export default function Sidebar() {
 
   return (
     <aside
+      className={`app-sidebar ${mobileMenuOpen ? 'mobile-open' : ''}`}
       style={{
         width,
         minWidth: width,
@@ -142,8 +142,8 @@ export default function Sidebar() {
         title="工作台"
       >
         <img
-          src={logoImg}
-          alt="BidMaster Pro"
+          src="/duncan-avatar.jpg"
+          alt="Duncan pro"
           style={{
             width: '32px',
             height: '32px',
@@ -155,7 +155,7 @@ export default function Sidebar() {
         {!sidebarCollapsed && (
           <div style={{ minWidth: 0, flex: 1 }}>
             <h1 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', margin: 0, whiteSpace: 'nowrap' }}>
-              BidMaster Pro
+              Duncan pro
             </h1>
             <p style={{ fontSize: '10px', color: '#94a3b8', marginTop: '1px', whiteSpace: 'nowrap' }}>
               全流程智能招投标平台
@@ -383,7 +383,8 @@ export default function Sidebar() {
           color: '#cbd5e1',
           textAlign: 'center',
         }}>
-          BidMaster Pro v2.0
+          Duncan pro · 基于 BidMaster Pro<br />
+          <a href="/duncan-pro-source.zip" download style={{ color: '#64748b' }}>下载对应源码（AGPL-3.0）</a>
         </div>
       )}
 

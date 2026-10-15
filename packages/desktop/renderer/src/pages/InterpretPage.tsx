@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Upload, FileSearch, FileText, ChevronLeft, Loader2, CheckCircle2, AlertCircle, BarChart3, Shield, BookOpen, Eye, X, File, Copy } from 'lucide-react';
+import { Upload, FileSearch, FileText, ChevronLeft, Loader2, CheckCircle2, AlertCircle, BarChart3, Shield, BookOpen, Eye, X, File, Copy, Download } from 'lucide-react';
 import { interpretApi, projectApi, type Project } from '../services/api';
 import { useAppStore } from '../stores/appStore';
 import StepHeader from '../components/common/StepHeader';
@@ -156,6 +156,8 @@ export default function InterpretPage() {
   const [dragOver, setDragOver] = useState(false);
   const [previewDoc, setPreviewDoc] = useState<{ name: string; content: string; metadata: Record<string, unknown> } | null>(null);
   const [restoring, setRestoring] = useState(false);
+  const [taskId, setTaskId] = useState<string | null>(null);
+  const [newProjectName, setNewProjectName] = useState('');
 
   const { currentProjectId } = useAppStore();
 
@@ -189,6 +191,7 @@ export default function InterpretPage() {
     try {
       const res = await interpretApi.getAnalysis(projectId);
       const data = res.data;
+      const pendingTask = localStorage.getItem(`duncan-interpret-task-${projectId}`);
 
       if (data.has_documents) {
         const docRes = await interpretApi.listDocuments(projectId);
@@ -197,10 +200,15 @@ export default function InterpretPage() {
         setDocuments([]);
       }
 
-      if (data.has_analysis && data.analysis?.dimensions) {
+      if (pendingTask) {
+        setTaskId(pendingTask);
+        setLoading(true);
+        resetToStep('interpret');
+      } else if (data.has_analysis && data.analysis?.dimensions) {
         setInterpretResult({
           success: true,
           data: { dimensions: data.analysis.dimensions },
+          warnings: data.failed_dimensions?.length ? [`${data.failed_dimensions.length} 项未完成，请查看红色分析卡片`] : [],
         });
         if (data.parse_info) {
           setParseResult({
@@ -279,15 +287,81 @@ export default function InterpretPage() {
     if (!selectedProjectId) return;
     setLoading(true);
     setError('');
+    setInterpretResult(null);
     try {
-      const res = await interpretApi.interpret(selectedProjectId);
-      setInterpretResult(res.data as InterpretResult);
-      advanceToStep('done');
+      const res = await interpretApi.startTask(selectedProjectId);
+      localStorage.setItem(`duncan-interpret-task-${selectedProjectId}`, res.data.task_id);
+      setTaskId(res.data.task_id);
+      advanceToStep('interpret');
     } catch (e: unknown) {
       const msg = (e as { response?: { data?: { detail?: string } } })?.response?.data?.detail || '解读失败';
       setError(msg);
-    } finally {
       setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!taskId || !selectedProjectId) return;
+    let cancelled = false;
+    const poll = async () => {
+      try {
+        const res = await interpretApi.getTask(taskId);
+        if (cancelled) return;
+        if (res.data.status === 'completed') {
+          localStorage.removeItem(`duncan-interpret-task-${selectedProjectId}`);
+          setTaskId(null);
+          const analysis = await interpretApi.getAnalysis(selectedProjectId);
+          setInterpretResult({ success: true, data: { dimensions: analysis.data.analysis?.dimensions || {} }, warnings: res.data.result?.warnings || [] });
+          setLoading(false);
+          advanceToStep('done');
+        } else if (res.data.status === 'failed') {
+          localStorage.removeItem(`duncan-interpret-task-${selectedProjectId}`);
+          setTaskId(null);
+          setInterpretResult({ success: false, error: res.data.error || '解读失败' });
+          setLoading(false);
+          advanceToStep('done');
+        }
+      } catch (e: unknown) {
+        if ((e as { response?: { status?: number } })?.response?.status === 404) {
+          localStorage.removeItem(`duncan-interpret-task-${selectedProjectId}`);
+          setTaskId(null);
+          setLoading(false);
+          setError('解读任务已过期，请重新提交');
+        }
+      }
+    };
+    void poll();
+    const timer = window.setInterval(() => { void poll(); }, 3000);
+    return () => { cancelled = true; window.clearInterval(timer); };
+  }, [taskId, selectedProjectId]);
+
+  const handleDownloadReport = async (format: 'markdown' | 'html') => {
+    if (!selectedProjectId) return;
+    try {
+      const res = await interpretApi.exportReport(selectedProjectId, format);
+      const extension = format === 'html' ? 'html' : 'md';
+      const mime = format === 'html' ? 'text/html' : 'text/markdown';
+      const url = URL.createObjectURL(new Blob([res.data], { type: `${mime};charset=utf-8` }));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Duncan-pro-招标文件解读报告.${extension}`;
+      a.click();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch {
+      setError('报告下载失败，请稍后重试');
+    }
+  };
+
+  const handleCreateProject = async () => {
+    const name = newProjectName.trim();
+    if (!name) return;
+    try {
+      const res = await projectApi.create(name);
+      await loadProjects();
+      setSelectedProjectId(res.data.project_id);
+      setNewProjectName('');
+    } catch {
+      setError('创建项目失败');
     }
   };
 
@@ -405,14 +479,14 @@ export default function InterpretPage() {
   };
 
   const renderDimensionFields = (fields: Record<string, unknown>) => (
-    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+    <table style={{ width: '100%', tableLayout: 'fixed', borderCollapse: 'collapse', fontSize: '13px' }}>
       <tbody>
         {Object.entries(fields).map(([key, value]) => (
           <tr key={key} style={{ borderBottom: '1px solid #f1f5f9' }}>
-            <td style={{ padding: '8px 12px', color: '#64748b', fontWeight: 500, whiteSpace: 'nowrap', verticalAlign: 'top', width: '140px' }}>
+            <td style={{ padding: '8px 12px', color: '#64748b', fontWeight: 500, verticalAlign: 'top', width: '35%', overflowWrap: 'anywhere' }}>
               {FIELD_LABELS[key] || key}
             </td>
-            <td style={{ padding: '8px 12px', color: '#1e293b' }}>
+            <td style={{ padding: '8px 12px', color: '#1e293b', overflowWrap: 'anywhere' }}>
               {renderValue(value)}
             </td>
           </tr>
@@ -432,8 +506,12 @@ export default function InterpretPage() {
     }
 
     return (
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(420px, 1fr))', gap: '16px' }}>
-        {Object.entries(dims).map(([key, value]) => {
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 420px), 1fr))', gap: '16px', minWidth: 0 }}>
+        {Object.entries(dims).sort(([a], [b]) => {
+          const order = Object.keys(DIMENSION_META);
+          return (order.indexOf(a) < 0 ? order.length : order.indexOf(a)) -
+            (order.indexOf(b) < 0 ? order.length : order.indexOf(b));
+        }).map(([key, value]) => {
           const meta = DIMENSION_META[key] || { label: key, icon: FileText, color: '#64748b' };
           const Icon = meta.icon;
           const hasError = !!(value && typeof value === 'object' && 'error' in (value as Record<string, unknown>));
@@ -475,7 +553,7 @@ export default function InterpretPage() {
   };
 
   return (
-    <div className="page-fade-in">
+    <div className="page-fade-in interpret-page">
       <StepHeader step={1} title="招标解读" subtitle="上传招标文件，AI自动提取15维度关键信息、评分标准、资质要求" color="#3b82f6" nextPath="/generate" nextLabel="下一步：投标生成" />
 
       <div style={{ background: 'var(--color-surface)', borderRadius: '12px', padding: '20px', border: '1px solid var(--color-border)', marginBottom: '20px' }}>
@@ -485,9 +563,13 @@ export default function InterpretPage() {
           <option value="">请选择项目</option>
           {projects.map(p => <option key={p.id} value={p.id}>{p.name} ({p.status})</option>)}
         </select>
+        <div className="interpret-create-project" style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+          <input value={newProjectName} onChange={(e) => setNewProjectName(e.target.value)} placeholder="新建项目名称，例如：无锡住宅项目" style={{ flex: 1, minWidth: 0, padding: '8px 12px', border: '1px solid var(--color-border)', borderRadius: 6 }} />
+          <button onClick={handleCreateProject} disabled={!newProjectName.trim()} style={{ padding: '8px 16px', border: 0, borderRadius: 6, background: 'var(--color-primary)', color: 'white', cursor: 'pointer' }}>新建项目</button>
+        </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+      <div className="interpret-steps" style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
         {STEP_CONFIG.map((step, i) => {
           const isCurrent = i === stepIndex;
           const isCompleted = i <= maxStepIdx && !isCurrent;
@@ -507,7 +589,7 @@ export default function InterpretPage() {
         })}
       </div>
 
-      <div style={{ background: 'var(--color-surface)', borderRadius: '12px', padding: '28px', border: '1px solid var(--color-border)' }}>
+      <div className="interpret-panel" style={{ background: 'var(--color-surface)', borderRadius: '12px', padding: '28px', border: '1px solid var(--color-border)' }}>
         {restoring ? (
           <div style={{ textAlign: 'center', padding: '40px' }}>
             <Loader2 size={28} color="var(--color-primary)" style={{ animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
@@ -668,8 +750,8 @@ export default function InterpretPage() {
             {loading ? (
               <div style={{ textAlign: 'center', padding: '40px' }}>
                 <Loader2 size={32} color="var(--color-primary)" style={{ animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
-                <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}>正在进行15维度AI解读，请稍候...</p>
-                <p style={{ fontSize: '12px', color: '#94a3b8', marginTop: '6px' }}>此过程可能需要1-3分钟</p>
+                <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}>后台正在解读 15 项内容，可稍后返回查看</p>
+                <p style={{ fontSize: '12px', color: '#94a3b8', marginTop: '6px' }}>页面每 3 秒自动更新任务状态</p>
               </div>
             ) : (
               <div style={{ textAlign: 'center', padding: '24px' }}>
@@ -694,10 +776,23 @@ export default function InterpretPage() {
               <div>
                 <div style={{ marginBottom: '20px', padding: '14px', background: '#f0fdf4', borderRadius: '8px', border: '1px solid #bbf7d0', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <CheckCircle2 size={18} color="#16a34a" />
-                  <span style={{ fontSize: '14px', fontWeight: 600, color: '#16a34a' }}>AI解读完成</span>
+                  <span style={{ fontSize: '14px', fontWeight: 600, color: '#16a34a' }}>{interpretResult.warnings?.length ? 'AI解读部分完成' : 'AI解读完成'}</span>
                   {interpretResult.warnings && interpretResult.warnings.length > 0 && (
                     <span style={{ fontSize: '12px', color: '#d97706', marginLeft: '8px' }}>({interpretResult.warnings.length} 条警告)</span>
                   )}
+                </div>
+                {interpretResult.warnings && interpretResult.warnings.length > 0 && (
+                  <div style={{ marginBottom: 16, padding: 12, color: '#92400e', background: '#fffbeb', borderRadius: 8, overflowWrap: 'anywhere' }}>
+                    {interpretResult.warnings.join('；')}
+                  </div>
+                )}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+                  <button onClick={() => handleDownloadReport('html')} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 16px', background: 'var(--color-primary)', color: 'white', border: 0, borderRadius: 8, cursor: 'pointer' }}>
+                    <Download size={16} /> 下载报告（手机可离线打开）
+                  </button>
+                  <button onClick={() => handleDownloadReport('markdown')} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 16px', background: 'white', color: 'var(--color-primary)', border: '1px solid var(--color-border)', borderRadius: 8, cursor: 'pointer' }}>
+                    下载 Markdown
+                  </button>
                 </div>
                 {interpretResult.data && renderDimensions(interpretResult.data)}
                 <details style={{ marginTop: '16px' }}>
@@ -736,7 +831,7 @@ export default function InterpretPage() {
       {previewDoc && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           onClick={() => setPreviewDoc(null)}>
-          <div style={{ width: '80%', maxWidth: '900px', maxHeight: '85vh', background: 'white', borderRadius: '12px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+          <div style={{ width: 'min(900px, calc(100vw - 24px))', maxHeight: '85vh', background: 'white', borderRadius: '12px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
             onClick={(e) => e.stopPropagation()}>
             <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

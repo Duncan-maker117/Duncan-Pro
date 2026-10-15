@@ -6,8 +6,8 @@ import { useAppStore } from '../stores/appStore';
 export default function LoginPage() {
   const navigate = useNavigate();
   const { setUser, setToken } = useAppStore();
-  const [email, setEmail] = useState('admin@bidmaster.com');
-  const [password, setPassword] = useState('admin123');
+  const [email, setEmail] = useState('admin@bidmaster.pro');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -69,27 +69,19 @@ export default function LoginPage() {
 
       {/* Login Card */}
       <div style={{
-        width: '420px',
+        width: 'min(420px, calc(100vw - 32px))',
         background: 'rgba(255,255,255,0.97)',
         borderRadius: '16px',
-        padding: '40px',
+        padding: 'clamp(24px, 5vw, 40px)',
         boxShadow: '0 20px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1)',
         position: 'relative',
         zIndex: 10,
         backdropFilter: 'blur(20px)',
       }}>
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <div style={{
-            width: '56px', height: '56px', borderRadius: '14px',
-            background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 16px', fontSize: '24px', color: 'white', fontWeight: 700,
-            boxShadow: '0 4px 16px rgba(59,130,246,0.4)',
-          }}>
-            B
-          </div>
+          <img src="/duncan-avatar.jpg" alt="Duncan pro" style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 16, marginBottom: 16, boxShadow: '0 4px 16px rgba(59,130,246,0.25)' }} />
           <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
-            BidMaster Pro
+            Duncan pro
           </h1>
           <p style={{ fontSize: '14px', color: '#64748b', marginTop: '8px' }}>
             全流程智能招投标平台
@@ -171,12 +163,9 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div style={{
-          marginTop: '24px', textAlign: 'center',
-          fontSize: '12px', color: '#94a3b8',
-        }}>
-          默认管理员: admin@bidmaster.pro / admin123
-        </div>
+        <p style={{ marginTop: 24, textAlign: 'center', fontSize: 11, color: '#94a3b8' }}>
+          基于 BidMaster Pro 开源项目改编 · AGPL-3.0 · <a href="/duncan-pro-source.zip" download>下载对应源码</a>
+        </p>
       </div>
 
       {/* CSS Animations */}

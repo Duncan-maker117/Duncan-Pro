@@ -187,6 +187,7 @@ export const interpretApi = {
     has_documents: boolean;
     has_parsed: boolean;
     has_analysis: boolean;
+    failed_dimensions?: string[];
     analysis: {
       dimensions: Record<string, unknown> | null;
       scoring_matrix: Record<string, unknown> | null;
@@ -200,6 +201,8 @@ export const interpretApi = {
   }>(`/interpret/analysis/${projectId}`),
   parse: (projectId: string) => api.post(`/interpret/parse/${projectId}`),
   interpret: (projectId: string) => api.post(`/interpret/interpret/${projectId}`),
+  startTask: (projectId: string) => api.post<{ task_id: string }>(`/interpret/task/${projectId}`),
+  getTask: (taskId: string) => api.get<{ status: string; result?: { warnings?: string[] }; error?: string }>(`/interpret/task/${taskId}`),
   scoringMatrix: (projectId: string) => api.post(`/interpret/scoring-matrix/${projectId}`),
   riskAlert: (projectId: string) => api.post(`/interpret/risk-alert/${projectId}`),
   exportReport: (projectId: string, format: string = 'markdown') =>

@@ -17,7 +17,7 @@ const allSteps = [
   { path: '/format', label: '输出', color: '#475569' },
 ];
 
-export default function Header() {
+export default function Header({ onMobileMenuClick, mobileMenuOpen }: { onMobileMenuClick?: () => void; mobileMenuOpen?: boolean }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { currentProjectId, projects, user, logout, sidebarCollapsed, toggleSidebar } = useAppStore();
@@ -40,6 +40,7 @@ export default function Header() {
 
   return (
     <header
+      className="app-header"
       style={{
         height: 'var(--header-height)',
         background: 'var(--color-surface)',
@@ -53,7 +54,8 @@ export default function Header() {
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         <button
-          onClick={toggleSidebar}
+          onClick={() => { if (window.matchMedia('(max-width: 768px)').matches) onMobileMenuClick?.(); else toggleSidebar(); }}
+          aria-expanded={mobileMenuOpen}
           aria-label={sidebarCollapsed ? '展开侧边栏' : '折叠侧边栏'}
           title={sidebarCollapsed ? '展开侧边栏 (Ctrl+B)' : '折叠侧边栏 (Ctrl+B)'}
           style={{
