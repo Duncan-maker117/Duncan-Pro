@@ -554,7 +554,7 @@ export default function InterpretPage() {
 
   return (
     <div className="page-fade-in interpret-page">
-      <StepHeader step={1} title="招标解读" subtitle="上传招标文件，AI自动提取15维度关键信息、评分标准、资质要求" color="#3b82f6" nextPath="/generate" nextLabel="下一步：投标生成" />
+      <StepHeader step={1} title="招标解读" subtitle="上传招标文件，AI自动提取15维度关键信息、评分标准、资质要求" color="#3b82f6" />
 
       <div style={{ background: 'var(--color-surface)', borderRadius: '12px', padding: '20px', border: '1px solid var(--color-border)', marginBottom: '20px' }}>
         <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '10px' }}>选择项目</h3>

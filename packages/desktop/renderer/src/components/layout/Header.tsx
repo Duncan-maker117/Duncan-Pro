@@ -85,8 +85,8 @@ export default function Header({ onMobileMenuClick, mobileMenuOpen }: { onMobile
           {sidebarCollapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
         </button>
         <div style={{ width: '1px', height: '20px', background: 'var(--color-border)' }} />
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px' }}>
+        <div className="header-title-area" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div className="header-breadcrumb" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px' }}>
           <span
             onClick={() => navigate('/dashboard')}
             style={{ color: 'var(--color-text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
@@ -124,7 +124,7 @@ export default function Header({ onMobileMenuClick, mobileMenuOpen }: { onMobile
         </div>
 
         {meta && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '3px', marginLeft: '8px' }}>
+          <div className="header-progress" style={{ display: 'flex', alignItems: 'center', gap: '3px', marginLeft: '8px' }}>
             {allSteps.map((s, idx) => {
               const isCurrent = s.path === currentPath;
               const isPast = meta.step > (idx + 1);
@@ -151,6 +151,7 @@ export default function Header({ onMobileMenuClick, mobileMenuOpen }: { onMobile
 
         {currentProjectId && (
           <div
+            className="header-current-project"
             title={projectName ? `项目名称：${projectName}\n项目 ID：${currentProjectId}` : `项目 ID：${currentProjectId}`}
             style={{
               fontSize: '11px',
@@ -239,8 +240,8 @@ export default function Header({ onMobileMenuClick, mobileMenuOpen }: { onMobile
             }}>
               <User size={14} color="var(--color-primary)" />
             </div>
-            <span style={{ fontSize: '13px', color: 'var(--color-text)', fontWeight: 500 }}>
-              {user?.name || '未登录'}
+            <span className="header-user-name" style={{ fontSize: '13px', color: 'var(--color-text)', fontWeight: 500 }}>
+              {user?.role === 'admin' ? '管理员' : user?.name || '未登录'}
             </span>
           </div>
           {showUserMenu && (
