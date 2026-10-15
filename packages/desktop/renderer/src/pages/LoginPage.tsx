@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '../services/api';
 import { useAppStore } from '../stores/appStore';
@@ -20,17 +21,29 @@ export default function LoginPage() {
     try {
       const res = await authApi.login(email, password);
       const { token, user } = res.data;
+      if (!token || !user) {
+        setError('登录请求没有得到平台的正常回复。请在 Safari 重新打开演示链接，完成邮箱验证码后再登录。');
+        return;
+      }
       localStorage.setItem('bidmaster_token', token);
       localStorage.setItem('bidmaster_user', JSON.stringify(user));
       setToken(token);
       setUser(user);
       navigate('/dashboard');
     } catch (err: unknown) {
-      if (err && typeof err === 'object' && 'response' in err) {
-        const axiosErr = err as { response?: { data?: { detail?: string } } };
-        setError(axiosErr.response?.data?.detail || '登录失败');
+      if (axios.isAxiosError(err)) {
+        const detail = err.response?.data?.detail;
+        if (typeof detail === 'string') {
+          setError(detail);
+        } else if (err.response?.status === 403 || err.response?.status === 302 || err.response?.status === 401) {
+          setError('登录请求被外层访问验证拦住了。请在 Safari 重新打开演示链接，完成邮箱验证码后再登录。');
+        } else if (!err.response) {
+          setError('手机没有连通登录服务。请在 Safari 重新打开演示链接，检查网络后重试。');
+        } else {
+          setError(`平台暂时无法处理登录（HTTP ${err.response.status}）。请稍后重试。`);
+        }
       } else {
-        setError('登录失败，请检查网络连接');
+        setError('登录时出现异常，请刷新页面重试。');
       }
     } finally {
       setLoading(false);
