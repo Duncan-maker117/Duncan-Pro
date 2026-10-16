@@ -26,16 +26,15 @@
 
 ## 界面预览
 
-以下图片来自 Duncan pro 实际运行界面，展示公开招标文件的演示项目。预览图仅用于说明页面形态，分析结论须以原文件为准。
+以下截图展示 Duncan pro 的页面布局和功能入口。实际可用范围以[当前能力状态](#当前能力状态)为准；目前完成端到端演示的是带文字层 PDF 的招标解读与报告导出。
 
 | 页面 | 预览 |
 | --- | --- |
-| 网页登录页 | <img src="duncan-docs/images/login-desktop.png" alt="Duncan pro 网页登录页" width="620"> |
-| 手机登录页 | <img src="duncan-docs/images/mobile-login.png" alt="Duncan pro 手机登录页" width="240"> |
-| 手机招标解读与报告入口 | <img src="duncan-docs/images/mobile-interpret.png" alt="Duncan pro 手机招标解读页" width="240"> |
-| 解读报告 | <img src="duncan-docs/images/report-preview.png" alt="Duncan pro 招标文件解读报告" width="620"> |
-
-图中的无锡项目使用公开招标文件的提前公示稿，不代表当前有效招标公告。文件出处见 [演示素材说明](samples/来源.txt)。
+| 工作台 | <img src="duncan-docs/images/dashboard.png" alt="Duncan pro 工作台" width="800"> |
+| 招标解读：上传文件 | <img src="duncan-docs/images/interpret-upload.png" alt="Duncan pro 招标解读上传界面" width="800"> |
+| 投标生成：结构模板 | <img src="duncan-docs/images/generate-templates.png" alt="Duncan pro 投标生成模板界面" width="800"> |
+| 投标检查：项目检查入口 | <img src="duncan-docs/images/check-overview.png" alt="Duncan pro 投标检查界面" width="800"> |
+| 资讯中心：数据源管理 | <img src="duncan-docs/images/news-sources.png" alt="Duncan pro 资讯中心数据源界面" width="800"> |
 
 ---
 
