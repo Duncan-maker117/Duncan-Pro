@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Duncan pro 招标文件智能解读平台在线交互演示。使用公开样例浏览解读流程与报告。">
+  <meta name="theme-color" content="#f3f7fc">
+  <link rel="icon" type="image/jpeg" href="assets/duncan-avatar.jpg">
+  <link rel="stylesheet" href="styles.css">
+  <title>Duncan pro · 在线体验 Demo</title>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="主导航">
+      <a class="brand" href="#workbench" aria-label="Duncan pro 工作台">
+        <img src="assets/duncan-avatar.jpg" alt="Duncan pro 头像" width="42" height="42">
+        <span><strong>Duncan pro</strong><small>招标文件智能解读</small></span>
+      </a>
+      <div class="sidebar-label">演示导航</div>
+      <nav class="nav-list" aria-label="演示页面">
+        <button type="button" class="nav-item active" data-page="workbench"><span class="nav-icon">⌂</span>工作台</button>
+        <button type="button" class="nav-item" data-page="interpret"><span class="nav-icon">◎</span>招标解读</button>
+        <button type="button" class="nav-item" data-page="report"><span class="nav-icon">▤</span>样例报告</button>
+        <button type="button" class="nav-item" data-page="preview"><span class="nav-icon">▦</span>界面预览</button>
+      </nav>
+      <div class="sidebar-foot">
+        <span class="status-dot"></span> 在线静态演示
+        <small>基于 BidMaster Pro 改编 · <a href="https://github.com/Duncan-maker117/Duncan-Pro" target="_blank" rel="noopener noreferrer">源码与许可</a></small>
+      </div>
+    </aside>
+
+    <div class="content-shell">
+      <header class="topbar">
+        <button type="button" class="menu-button" id="menu-button" aria-label="打开菜单" aria-expanded="false" aria-controls="sidebar">☰</button>
+        <div class="breadcrumb">Duncan pro <span>›</span> <strong id="breadcrumb-current">工作台</strong></div>
+        <a class="top-link" href="https://github.com/Duncan-maker117/Duncan-Pro" target="_blank" rel="noopener noreferrer">GitHub 源码 ↗</a>
+      </header>
+
+      <main id="main-content">
+        <div class="notice" role="note"><strong>在线体验 Demo</strong><span>预置公开文件的结果回放，可直接浏览；不会上传文件或实时调用 AI。</span></div>
+
+        <section class="page active" id="page-workbench" aria-labelledby="workbench-title">
+          <div class="page-heading"><div><span class="eyebrow">OVERVIEW / 工作台</span><h1 id="workbench-title">把复杂招标文件，整理成可阅读的清单</h1><p>从真实公开文件出发，看看 Duncan pro 如何呈现项目、资格、评分与风险信息。</p></div><button type="button" class="primary-button" data-go="interpret">体验招标解读 <span aria-hidden="true">→</span></button></div>
+          <div class="metric-grid" aria-label="演示样例信息">
+            <article class="metric"><span class="metric-icon blue">▤</span><span class="metric-label">公开样例文件</span><strong>1 <small>份</small></strong></article>
+            <article class="metric"><span class="metric-icon green">✓</span><span class="metric-label">本机已完成分析</span><strong>15 <small>项</small></strong></article>
+            <article class="metric"><span class="metric-icon amber">◷</span><span class="metric-label">原始文件页数</span><strong>89 <small>页</small></strong></article>
+            <article class="metric"><span class="metric-icon purple">⇩</span><span class="metric-label">可下载样例报告</span><strong>HTML</strong></article>
+          </div>
+          <div class="two-col">
+            <article class="panel project-panel">
+              <div class="panel-heading"><div><span class="section-kicker">01 / SAMPLE PROJECT</span><h2>预置演示项目</h2></div><span class="pill">公开资料</span></div>
+              <div class="project-art"><div class="project-art-lines"></div><span>澄地<br><strong>2026-C-4</strong></span><small>无锡 · 房地产开发项目</small></div>
+              <h3>澄地2026-C-4号地块商品房开发项目</h3>
+              <p>勘察、方案、初步设计招标文件提前公示稿。示例结果由本机真实解读流程生成，本页仅回放节选。</p>
+              <div class="project-meta"><span>PDF · 89 页</span><span>提取文字约 5.5 万字</span></div>
+              <button type="button" class="outline-button full" data-go="interpret">进入样例项目 <span aria-hidden="true">→</span></button>
+            </article>
+            <article class="panel flow-panel">
+              <div class="panel-heading"><div><span class="section-kicker">02 / WORKFLOW</span><h2>四步了解解读流程</h2></div></div>
+              <ol class="flow-list">
+                <li><span class="flow-num">01</span><div><strong>上传招标文件</strong><p>真实平台接收文件；这里展示已上传的公开样例。</p></div></li>
+                <li><span class="flow-num">02</span><div><strong>解析文字</strong><p>样例 PDF 已在本机提取 55,260 个字符。</p></div></li>
+                <li><span class="flow-num">03</span><div><strong>AI 分主题解读</strong><p>样例曾完成 15 个主题的 DeepSeek 分析。</p></div></li>
+                <li><span class="flow-num">04</span><div><strong>人工核对与报告</strong><p>金额、日期和资格要求须回查原文后再使用。</p></div></li>
+              </ol>
+              <div class="quiet-callout">这个在线版本用于随时展示。真实文件分析需要自行部署后台并配置模型密钥。</div>
+            </article>
+          </div>
+        </section>
+
+        <section class="page" id="page-interpret" aria-labelledby="interpret-title" hidden>
+          <div class="page-heading"><div><span class="eyebrow">01 / 招标解读</span><h1 id="interpret-title">跟着公开样例走一遍</h1><p>点击步骤查看已完成的结果；这里没有实时处理，也不需要登录。</p></div><a class="outline-button" href="https://ggzyjy.wuxi.gov.cn/doc/2026/07/09/4802454.shtml" target="_blank" rel="noopener noreferrer">查看原始来源 ↗</a></div>
+          <div class="step-tabs" role="tablist" aria-label="样例解读步骤">
+            <button type="button" role="tab" class="step-tab active" data-step="file" aria-selected="true"><span>1</span>文件</button>
+            <button type="button" role="tab" class="step-tab" data-step="parse" aria-selected="false"><span>2</span>解析</button>
+            <button type="button" role="tab" class="step-tab" data-step="analysis" aria-selected="false"><span>3</span>解读</button>
+            <button type="button" role="tab" class="step-tab" data-step="finish" aria-selected="false"><span>4</span>报告</button>
+          </div>
+          <div class="step-content active" id="step-file">
+            <div class="panel stage-panel"><span class="section-kicker">已准备的公开文件</span><h2>澄地2026-C-4号地块商品房开发项目</h2><p>勘察、方案、初步设计招标文件提前公示稿。它不是正在招标的有效公告，仅用于演示文件解读。</p><div class="file-row"><span class="file-icon">PDF</span><div><strong>无锡澄地2026-C-4号地块商品房开发项目-招标文件.pdf</strong><small>89 页 · 无锡公共资源交易中心公开资料</small></div><span class="file-ready">已准备</span></div><div class="stage-actions"><a class="text-link" href="https://ggzyjy.wuxi.gov.cn/uploadfiles/202607/09/2026070910434158010112.pdf" target="_blank" rel="noopener noreferrer">查看公开 PDF ↗</a><button type="button" class="primary-button" data-next-step="parse">查看解析结果 →</button></div></div>
+          </div>
+          <div class="step-content" id="step-parse" hidden>
+            <div class="panel stage-panel"><span class="section-kicker">文字提取 / 已完成</span><h2>89 页文件，提取 55,260 个字符</h2><p>这份样例含可读取的文字层，因此能够进入后续分析。扫描图片类文件目前不在这个演示的已验收范围内。</p><div class="stat-strip"><div><strong>89</strong><small>PDF 页数</small></div><div><strong>55,260</strong><small>提取字符</small></div><div><strong>15</strong><small>分析主题</small></div></div><div class="stage-actions"><a class="text-link" href="https://ggzyjy.wuxi.gov.cn/doc/2026/07/09/4802454.shtml" target="_blank" rel="noopener noreferrer">核对文件来源 ↗</a><button type="button" class="primary-button" data-next-step="analysis">查看解读结果 →</button></div></div>
+          </div>
+          <div class="step-content" id="step-analysis" hidden>
+            <div class="panel stage-panel"><div class="panel-heading"><div><span class="section-kicker">DeepSeek 分析 / 结果节选</span><h2>把关键内容放到一起看</h2></div><span class="pill green-pill">样例已完成</span></div><p class="analysis-intro">以下文字来自本机对公开文件的解读结果，选取少量字段展示。正式使用时请回到原文件确认。</p><div class="result-grid"><article class="result-card"><span>项目与金额</span><strong>勘察、方案、初步设计</strong><p>报告提取最高限价为 582.12 万元；文件中的建安投资约 40,000 万元，两者含义不同。</p></article><article class="result-card"><span>资格要求</span><strong>设计与勘察资质</strong><p>报告识别设计甲级及岩土工程勘察甲级等可选资质组合，需按原文件条款逐项核对。</p></article><article class="result-card"><span>评分细则</span><strong>技术标（设计方案）55 分</strong><p>报告列出报价、技术方案、项目管理机构等评分部分。</p></article><article class="result-card"><span>废标提示</span><strong>注意最高限价与暗标</strong><p>超限报价、暗标出现可识别投标人身份的信息，均被报告列为重点核查项。</p></article></div><div class="stage-actions"><span class="hint">解读是辅助阅读，不能替代投标复核。</span><button type="button" class="primary-button" data-next-step="finish">查看报告 →</button></div></div>
+          </div>
+          <div class="step-content" id="step-finish" hidden>
+            <div class="panel stage-panel finish-panel"><span class="finish-mark">✓</span><span class="section-kicker">样例流程结束</span><h2>现在可以查看或下载报告节选</h2><p>报告展示项目概况、资格要求、评分与风险提醒，并标注公开资料来源。它不是正式投标文件。</p><div class="stage-actions center"><button type="button" class="primary-button" data-go="report">打开样例报告 →</button><a class="outline-button" href="sample-report.html" download="Duncan-pro-招标解读样例报告.html">下载 HTML 报告</a></div></div>
+          </div>
+        </section>
+
+        <section class="page" id="page-report" aria-labelledby="report-title" hidden>
+          <div class="page-heading"><div><span class="eyebrow">02 / 样例报告</span><h1 id="report-title">让解读结果可读、可带走</h1><p>根据公开 PDF 的真实分析结果整理的精简样例；关键结论仍需人工核对。</p></div><a class="primary-button" href="sample-report.html" download="Duncan-pro-招标解读样例报告.html">下载 HTML 报告 ↓</a></div>
+          <div class="panel report-panel"><div class="report-topline"><span>解读报告 / EXCERPT</span><span>公开样例 · 2026</span></div><h2>澄地2026-C-4号地块商品房开发项目</h2><p class="report-subtitle">勘察、方案、初步设计 · 招标文件提前公示稿</p><div class="report-divider"></div><div class="report-items"><div><span>项目概况</span><strong>建筑面积约 69,672.7 平方米；建安投资约 40,000 万元。</strong></div><div><span>最高限价</span><strong>报告提取勘察设计收费最高限价 582.12 万元。</strong></div><div><span>资格审查</span><strong>重点核查设计与勘察资质、项目负责人注册证书等要求。</strong></div><div><span>投标风险</span><strong>重点核查报价限价、暗标要求、保证金与联合体条件。</strong></div></div><div class="report-footer"><p>公开来源：无锡公共资源交易中心 · 内容仅供平台功能展示，不用于真实投标。</p><a href="sample-report.html" target="_blank" rel="noopener noreferrer">在新页面阅读完整样例 ↗</a></div></div>
+        </section>
+
+        <section class="page" id="page-preview" aria-labelledby="preview-title" hidden>
+          <div class="page-heading"><div><span class="eyebrow">03 / 界面预览</span><h1 id="preview-title">看看真实平台的页面</h1><p>以下截图来自 Duncan pro 网页。截图中的按钮只展示原平台界面；在线 Demo 体验请从工作台进入。</p></div></div>
+          <div class="preview-grid">
+            <figure><img src="assets/dashboard.png" alt="Duncan pro 工作台截图" loading="lazy"><figcaption><strong>工作台</strong><span>项目和流程总览</span></figcaption></figure>
+            <figure><img src="assets/interpret-upload.png" alt="Duncan pro 招标解读上传截图" loading="lazy"><figcaption><strong>招标解读</strong><span>文件与分析入口</span></figcaption></figure>
+            <figure><img src="assets/generate-templates.png" alt="Duncan pro 投标生成模板截图" loading="lazy"><figcaption><strong>投标生成</strong><span>原项目功能页面，尚未纳入本版验收</span></figcaption></figure>
+            <figure><img src="assets/check-overview.png" alt="Duncan pro 投标检查截图" loading="lazy"><figcaption><strong>投标检查</strong><span>原项目功能页面，尚未纳入本版验收</span></figcaption></figure>
+            <figure><img src="assets/news-sources.png" alt="Duncan pro 资讯中心截图" loading="lazy"><figcaption><strong>资讯中心</strong><span>原项目功能页面</span></figcaption></figure>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+  <button type="button" class="sidebar-backdrop" id="sidebar-backdrop" aria-label="关闭菜单" hidden></button>
+</body>
+</html>

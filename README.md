@@ -2,6 +2,10 @@
 
 上传招标文件 · 提取关键信息 · DeepSeek 分析 · 下载解读报告
 
+[在线体验 Demo](https://duncan-maker117.github.io/Duncan-Pro/) · [查看源码](https://github.com/Duncan-maker117/Duncan-Pro)
+
+> 在线 Demo 是预置公开样例的交互演示，无需登录或开启本机电脑；它不会接收上传文件，也不会实时调用 DeepSeek。真实文件解读请按[快速开始](#快速开始)自行部署。
+
 [项目简介](#项目简介) · [界面预览](#界面预览) · [功能特性](#功能特性) · [技术架构](#技术架构) · [快速开始](#快速开始) · [项目结构](#项目结构) · [许可证](#许可证)
 
 > Duncan pro 将招标文件的阅读、信息整理和报告输出放在一个网页里。当前重点是**真实文件解读**：上传有文字层的招标文件，提取内容，发起 AI 分析，在电脑或手机上查看结果并下载报告。
@@ -175,6 +179,8 @@ docker compose --env-file .env.local -f docker/docker-compose.duncan.yml down
 
 如需短时间用手机查看，可在服务运行后双击 `启动手机演示.bat`。脚本会生成临时 `trycloudflare.com` 链接；电脑、Docker、脚本窗口和网络都需保持运行。该链接目前只有**平台登录**保护，适合短时演示，不适合作为长期公开服务。操作与限制见 [手机演示说明](duncan-docs/部署.md)。
 
+固定的[在线体验 Demo](https://duncan-maker117.github.io/Duncan-Pro/)由 GitHub Pages 托管，无需开启本机电脑，但仅回放预置样例，不提供实时文件分析。
+
 ---
 
 ## 项目结构
@@ -187,6 +193,7 @@ Duncan-Pro/
 ├── core/doc_engine/             文件解析能力
 ├── docker/                      Docker 镜像与编排
 ├── scripts/                     密钥、管理员、手机演示脚本
+├── docs/                        GitHub Pages 在线静态 Demo
 ├── duncan-docs/                 部署、结构、变更和验收记录
 └── samples/来源.txt             演示文件的公开来源
 ```
