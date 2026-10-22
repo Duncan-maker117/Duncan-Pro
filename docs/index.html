@@ -17,10 +17,24 @@
         <img src="assets/duncan-avatar.jpg" alt="Duncan pro 头像" width="42" height="42">
         <span><strong>Duncan pro</strong><small>招标文件智能解读</small></span>
       </a>
-      <div class="sidebar-label">演示导航</div>
+      <div class="sidebar-label">工作台</div>
       <nav class="nav-list" aria-label="演示页面">
         <button type="button" class="nav-item active" data-page="workbench"><span class="nav-icon">⌂</span>工作台</button>
+      </nav>
+      <div class="sidebar-label">投标工作流</div>
+      <nav class="nav-list" aria-label="投标工作流">
         <button type="button" class="nav-item" data-page="interpret"><span class="nav-icon">◎</span>招标解读</button>
+        <button type="button" class="nav-item" data-page="generate"><span class="nav-icon">✎</span>投标生成</button>
+        <button type="button" class="nav-item" data-page="check"><span class="nav-icon">✓</span>投标检查</button>
+        <button type="button" class="nav-item" data-page="format"><span class="nav-icon">▤</span>文档输出</button>
+      </nav>
+      <div class="sidebar-label">资讯与管理</div>
+      <nav class="nav-list" aria-label="资讯与管理">
+        <button type="button" class="nav-item" data-page="news"><span class="nav-icon">▣</span>资讯中心</button>
+        <button type="button" class="nav-item" data-page="settings"><span class="nav-icon">⚙</span>平台设置</button>
+      </nav>
+      <div class="sidebar-label">演示资料</div>
+      <nav class="nav-list" aria-label="演示资料">
         <button type="button" class="nav-item" data-page="report"><span class="nav-icon">▤</span>样例报告</button>
         <button type="button" class="nav-item" data-page="preview"><span class="nav-icon">▦</span>界面预览</button>
       </nav>
@@ -38,7 +52,7 @@
       </header>
 
       <main id="main-content">
-        <div class="notice" role="note"><strong>在线体验 Demo</strong><span>预置公开文件的结果回放，可直接浏览；不会上传文件或实时调用 AI。</span></div>
+        <div class="notice" role="note"><strong>在线体验 Demo</strong><span>可点击浏览完整导航与预置样例；不会上传文件、保存数据或实时调用 AI。</span></div>
 
         <section class="page active" id="page-workbench" aria-labelledby="workbench-title">
           <div class="page-heading"><div><span class="eyebrow">OVERVIEW / 工作台</span><h1 id="workbench-title">把复杂招标文件，整理成可阅读的清单</h1><p>从真实公开文件出发，看看 Duncan pro 如何呈现项目、资格、评分与风险信息。</p></div><button type="button" class="primary-button" data-go="interpret">体验招标解读 <span aria-hidden="true">→</span></button></div>
@@ -68,6 +82,12 @@
               <div class="quiet-callout">这个在线版本用于随时展示。真实文件分析需要自行部署后台并配置模型密钥。</div>
             </article>
           </div>
+          <div class="workflow-shortcuts" aria-label="工作流快捷入口">
+            <button type="button" data-go="interpret"><span>01</span><strong>招标解读</strong><small>查看公开文件解析结果</small></button>
+            <button type="button" data-go="generate"><span>02</span><strong>投标生成</strong><small>浏览章节模板示意</small></button>
+            <button type="button" data-go="check"><span>03</span><strong>投标检查</strong><small>了解核查项目</small></button>
+            <button type="button" data-go="format"><span>04</span><strong>文档输出</strong><small>预览并下载样例报告</small></button>
+          </div>
         </section>
 
         <section class="page" id="page-interpret" aria-labelledby="interpret-title" hidden>
@@ -90,6 +110,59 @@
           <div class="step-content" id="step-finish" hidden>
             <div class="panel stage-panel finish-panel"><span class="finish-mark">✓</span><span class="section-kicker">样例流程结束</span><h2>现在可以查看或下载报告节选</h2><p>报告展示项目概况、资格要求、评分与风险提醒，并标注公开资料来源。它不是正式投标文件。</p><div class="stage-actions center"><button type="button" class="primary-button" data-go="report">打开样例报告 →</button><a class="outline-button" href="sample-report.html" download="Duncan-pro-招标解读样例报告.html">下载 HTML 报告</a></div></div>
           </div>
+        </section>
+
+        <section class="page" id="page-generate" aria-labelledby="generate-title" hidden>
+          <div class="page-heading"><div><span class="eyebrow">02 / 投标生成</span><h1 id="generate-title">按章节组织投标内容</h1><p>这里展示原平台的结构模板和编辑流程示意；不生成真实投标正文。</p></div><span class="demo-badge">模板交互演示</span></div>
+          <div class="panel compact-panel"><strong>当前演示项目</strong><span>澄地2026-C-4号地块商品房开发项目 · 勘察、方案、初步设计</span><button type="button" class="text-button" data-go="interpret">查看招标解读 →</button></div>
+          <div class="panel"><div class="panel-heading"><div><span class="section-kicker">结构模板</span><h2>选择一个章节类型</h2></div><span class="pill">只切换示例内容</span></div><p class="muted-copy">原平台提供投标函、资格审查、技术标、商务标、售后服务等结构模板。点击卡片查看对应的目录示意。</p>
+            <div class="template-grid" role="group" aria-label="章节类型">
+              <button type="button" class="choice-card active" data-template="letter" aria-pressed="true"><strong>投标函</strong><small>授权书 · 承诺书</small></button>
+              <button type="button" class="choice-card" data-template="qualification" aria-pressed="false"><strong>资格审查</strong><small>资质 · 业绩 · 人员</small></button>
+              <button type="button" class="choice-card" data-template="technical" aria-pressed="false"><strong>技术标</strong><small>方案 · 安全 · 质量</small></button>
+              <button type="button" class="choice-card" data-template="commercial" aria-pressed="false"><strong>商务标</strong><small>报价 · 预算</small></button>
+              <button type="button" class="choice-card" data-template="service" aria-pressed="false"><strong>售后服务</strong><small>培训 · 应急 · 质保</small></button>
+            </div>
+          </div>
+          <div class="panel demo-detail"><div><span class="section-kicker">目录示意 / 不含生成正文</span><h2 id="template-title">投标函</h2><p id="template-description">可先确定目录与责任人，再对照招标文件逐条填写。</p></div><ol id="template-chapters" class="chapter-list"><li>投标函</li><li>法定代表人身份证明</li><li>授权委托书</li><li>投标承诺书</li></ol><div class="quiet-callout">AI 生成正文、在线编辑与保存需要部署后台。这里的目录仅用于展示产品流程。</div></div>
+          <div class="page-bottom-actions"><button type="button" class="primary-button" data-go="check">下一步：查看投标检查 →</button></div>
+        </section>
+
+        <section class="page" id="page-check" aria-labelledby="check-title" hidden>
+          <div class="page-heading"><div><span class="eyebrow">03 / 投标检查</span><h1 id="check-title">先看清楚需要核查什么</h1><p>展示原平台的检查分类及示例规则；此页没有读取投标书，也没有运行合规审核。</p></div><span class="demo-badge amber-badge">规则目录演示</span></div>
+          <div class="panel compact-panel"><strong>检查对象</strong><span>当前没有上传投标书；以下结果均为待核查状态。</span><button type="button" class="text-button" data-go="generate">浏览投标结构 →</button></div>
+          <div class="check-categories" role="group" aria-label="检查分类">
+            <button type="button" class="category-tab active" data-check="all" aria-pressed="true">全部检查</button>
+            <button type="button" class="category-tab" data-check="qualification" aria-pressed="false">资格与人员</button>
+            <button type="button" class="category-tab" data-check="commercial" aria-pressed="false">报价与商务</button>
+            <button type="button" class="category-tab" data-check="document" aria-pressed="false">文件与签章</button>
+          </div>
+          <div class="check-grid">
+            <article class="check-card" data-check-category="qualification"><span>待核查</span><strong>资质核查</strong><p>设计、勘察资质及证书有效期。</p></article>
+            <article class="check-card" data-check-category="qualification"><span>待核查</span><strong>项目负责人资格</strong><p>注册证书、业绩和人员要求。</p></article>
+            <article class="check-card" data-check-category="commercial"><span>待核查</span><strong>报价限价</strong><p>核对投标报价是否超过文件上限。</p></article>
+            <article class="check-card" data-check-category="commercial"><span>待核查</span><strong>保证金</strong><p>金额、形式、到账与有效期。</p></article>
+            <article class="check-card" data-check-category="document"><span>待核查</span><strong>签字盖章</strong><p>签署位置、公章与电子签章。</p></article>
+            <article class="check-card" data-check-category="document"><span>待核查</span><strong>暗标要求</strong><p>核对匿名规则和身份标识。</p></article>
+          </div>
+          <div class="quiet-callout page-callout">截图中的“21 项检查”属于原平台界面说明。这个静态 Demo 只展示部分规则目录，不能给出通过或不通过结论。</div>
+          <div class="page-bottom-actions"><button type="button" class="primary-button" data-go="format">下一步：查看文档输出 →</button></div>
+        </section>
+
+        <section class="page" id="page-format" aria-labelledby="format-title" hidden>
+          <div class="page-heading"><div><span class="eyebrow">04 / 文档输出</span><h1 id="format-title">把结果整理成可带走的报告</h1><p>这里提供真实样例的报告节选。正式投标书排版依赖完整正文和后台服务。</p></div><a class="primary-button" href="sample-report.html" download="Duncan-pro-招标解读样例报告.html">下载样例报告 ↓</a></div>
+          <div class="two-col"><div class="panel"><span class="section-kicker">导出内容</span><h2>公开招标文件解读报告</h2><p class="muted-copy">包含项目概况、资格要求、评分与风险提醒，已删除不适合公开演示的个人联系方式。</p><div class="output-row"><span>格式</span><strong>HTML 网页</strong></div><div class="output-row"><span>来源</span><strong>无锡公共资源交易中心公开文件</strong></div><div class="output-row"><span>用途</span><strong>产品功能演示</strong></div><a class="outline-button full" href="sample-report.html" target="_blank" rel="noopener noreferrer">打开报告预览 →</a></div><div class="panel"><span class="section-kicker">原平台能力</span><h2>标书排版与模板配置</h2><p class="muted-copy">本地平台有文档输出页面；静态演示只提供解读样例报告，不展示虚构的投标书生成结果。</p><div class="document-preview"><span>Duncan pro</span><strong>招标文件解读报告</strong><small>公开样例 · 节选版</small><i></i><i></i><i></i></div></div></div>
+        </section>
+
+        <section class="page" id="page-news" aria-labelledby="news-title" hidden>
+          <div class="page-heading"><div><span class="eyebrow">资讯与管理</span><h1 id="news-title">资讯中心</h1><p>这里说明原平台的资讯入口；在线静态 Demo 不抓取实时公告或推荐商机。</p></div><span class="demo-badge">静态来源目录</span></div>
+          <div class="panel"><div class="panel-heading"><div><span class="section-kicker">公开信息来源</span><h2>从官方公告开始查找项目</h2></div></div><p class="muted-copy">以下是可自行访问的公开来源链接，不代表平台已接入实时采集。</p><div class="source-grid"><a href="https://www.ggzy.gov.cn/" target="_blank" rel="noopener noreferrer"><strong>全国公共资源交易平台</strong><small>全国公共资源交易信息入口 ↗</small></a><a href="https://www.cebpubservice.com/" target="_blank" rel="noopener noreferrer"><strong>中国招标投标公共服务平台</strong><small>招标公告与公示信息 ↗</small></a><a href="https://ggzyjy.wuxi.gov.cn/" target="_blank" rel="noopener noreferrer"><strong>无锡公共资源交易中心</strong><small>本 Demo 招标文件的公开来源 ↗</small></a></div></div>
+          <div class="panel demo-detail"><span class="section-kicker">本次预置文件</span><h2>澄地2026-C-4号地块商品房开发项目</h2><p class="muted-copy">已预先完成 PDF 文字提取与解读。点击进入招标解读，可以看到项目样例。</p><button type="button" class="primary-button" data-go="interpret">查看样例项目 →</button></div>
+        </section>
+
+        <section class="page" id="page-settings" aria-labelledby="settings-title" hidden>
+          <div class="page-heading"><div><span class="eyebrow">资讯与管理</span><h1 id="settings-title">平台设置</h1><p>在线 Demo 为免登录的只读展示，设置不会写入设备或服务器。</p></div><span class="demo-badge">只读演示</span></div>
+          <div class="settings-grid"><div class="panel"><span class="section-kicker">运行方式</span><h2>静态托管</h2><p class="muted-copy">GitHub Pages 提供此公开演示网页。访问者无需安装 Docker；你自己的电脑也无需保持开机。</p><span class="setting-status">当前：在线演示</span></div><div class="panel"><span class="section-kicker">模型配置</span><h2>DeepSeek API</h2><p class="muted-copy">本地完整版可由管理员在后台配置模型密钥。在线 Demo 不接收密钥、不发起模型请求。</p><span class="setting-status muted-status">当前：未连接</span></div><div class="panel"><span class="section-kicker">数据与权限</span><h2>只读样例</h2><p class="muted-copy">网页不提供真实账户、上传或保存。正式使用需要独立部署后台、数据库和访问控制。</p><span class="setting-status muted-status">当前：无访客数据</span></div></div>
         </section>
 
         <section class="page" id="page-report" aria-labelledby="report-title" hidden>
