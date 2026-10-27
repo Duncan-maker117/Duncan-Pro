@@ -72,6 +72,24 @@ body {
 }
 
 @media (max-width: 768px) {
+  .static-demo .step-slide-in { padding: 14px !important; flex-wrap: wrap; gap: 12px !important; }
+  .static-demo .step-slide-in > div:first-child { flex: 1 1 100% !important; min-width: 0; }
+  .static-demo .step-slide-in > div:first-child > div:last-child { min-width: 0; }
+  .static-demo .step-slide-in > div:nth-child(2) { flex: 1 1 auto; }
+  .static-demo .step-slide-in > button { margin-left: auto; }
+  .static-demo .demo-generation-tabs { flex-wrap: wrap; }
+  .static-demo .demo-generation-tabs > button { flex: 1 1 42%; justify-content: center; }
+  .static-demo .demo-template-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  .static-demo .demo-check-grid, .static-demo .demo-metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .static-demo .demo-dashboard-columns { grid-template-columns: minmax(0, 1fr) !important; }
+  .static-demo .demo-project-picker { display: block !important; max-width: 100%; }
+  .static-demo .demo-project-picker > button { max-width: 100% !important; min-width: 0; }
+  .static-demo .demo-project-picker > button > span { min-width: 0; }
+  .static-demo .demo-check-selector { flex-wrap: wrap; }
+  .static-demo .demo-check-selector > select { flex: 1 1 100% !important; min-width: 0; max-width: 100%; }
+  .static-demo .demo-format-columns { grid-template-columns: minmax(0, 1fr) !important; }
+  .static-demo .demo-news-stats { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .static-demo [style*="grid-template-columns: 280px 1fr"] { grid-template-columns: minmax(0, 1fr) !important; }
   .app-sidebar {
     position: fixed !important;
     top: 0;

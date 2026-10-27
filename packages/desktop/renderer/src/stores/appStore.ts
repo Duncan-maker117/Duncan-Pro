@@ -21,7 +21,7 @@ interface AppState {
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
-      currentProjectId: null,
+      currentProjectId: import.meta.env.VITE_STATIC_DEMO === 'true' ? 'sample-wuxi' : null,
       projects: [],
       sidebarCollapsed: false,
       user: null,
@@ -40,7 +40,7 @@ export const useAppStore = create<AppState>()(
       },
     }),
     {
-      name: 'bidmaster-app-store',
+      name: import.meta.env.VITE_STATIC_DEMO === 'true' ? 'duncan-static-demo-store' : 'bidmaster-app-store',
       partialize: (state) => ({
         currentProjectId: state.currentProjectId,
         sidebarCollapsed: state.sidebarCollapsed,

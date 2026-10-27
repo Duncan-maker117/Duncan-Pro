@@ -71,7 +71,7 @@ export default function Sidebar({ mobileMenuOpen = false }: { mobileMenuOpen?: b
   const user = useAppStore((s) => s.user);
 
   const userRoleNames = (user?.roles || []).map(r => r.name);
-  const isSystemAdmin = userRoleNames.includes('admin');
+  const isSystemAdmin = import.meta.env.VITE_STATIC_DEMO === 'true' || userRoleNames.includes('admin');
   const hasAnyRole = userRoleNames.length > 0;
 
   const visiblePipelineSteps = pipelineSteps.filter(step => {
@@ -142,7 +142,7 @@ export default function Sidebar({ mobileMenuOpen = false }: { mobileMenuOpen?: b
         title="工作台"
       >
         <img
-          src="/duncan-avatar.jpg"
+          src={`${import.meta.env.BASE_URL}duncan-avatar.jpg`}
           alt="Duncan pro"
           style={{
             width: '32px',
@@ -384,7 +384,7 @@ export default function Sidebar({ mobileMenuOpen = false }: { mobileMenuOpen?: b
           textAlign: 'center',
         }}>
           Duncan pro · 基于 BidMaster Pro<br />
-          <a href="/duncan-pro-source.zip" download style={{ color: '#64748b' }}>下载对应源码（AGPL-3.0）</a>
+          <a href={import.meta.env.VITE_STATIC_DEMO === 'true' ? 'https://github.com/Duncan-maker117/Duncan-Pro' : '/duncan-pro-source.zip'} download={import.meta.env.VITE_STATIC_DEMO === 'true' ? undefined : true} style={{ color: '#64748b' }}>查看对应源码（AGPL-3.0）</a>
         </div>
       )}
 

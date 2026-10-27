@@ -241,7 +241,7 @@ export default function Header({ onMobileMenuClick, mobileMenuOpen }: { onMobile
               <User size={14} color="var(--color-primary)" />
             </div>
             <span className="header-user-name" style={{ fontSize: '13px', color: 'var(--color-text)', fontWeight: 500 }}>
-              {user?.role === 'admin' ? '管理员' : user?.name || '未登录'}
+              {import.meta.env.VITE_STATIC_DEMO === 'true' ? '演示访客' : user?.role === 'admin' ? '管理员' : user?.name || '未登录'}
             </span>
           </div>
           {showUserMenu && (
@@ -252,7 +252,9 @@ export default function Header({ onMobileMenuClick, mobileMenuOpen }: { onMobile
               boxShadow: '0 8px 24px rgba(0,0,0,0.12)', zIndex: 100,
               overflow: 'hidden',
             }}>
-              {user ? (
+              {import.meta.env.VITE_STATIC_DEMO === 'true' ? (
+                <div style={{ padding: '12px 14px', fontSize: '12px', color: '#64748b' }}>免登录演示，操作不会保存到服务器。</div>
+              ) : user ? (
                 <>
                   <div style={{
                     padding: '10px 14px', borderBottom: '1px solid var(--color-border)',

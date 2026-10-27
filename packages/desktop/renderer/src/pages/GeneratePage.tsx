@@ -953,7 +953,7 @@ export default function GeneratePage() {
         </select>
       </div>
 
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+      <div className="demo-generation-tabs" style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
         {sectionTabs.map(tab => {
           const isCompleted = tab.key === 'outline' ? outlineGatePassed : tab.key === 'generate' ? generateGatePassed : tab.key === 'structure' ? selectedStructureTemplates.size > 0 && Boolean(structureResult) : Boolean(scoreCoverage);
           const isLocked = tab.requires.includes('outline') && !outlineGatePassed;
@@ -1076,7 +1076,7 @@ export default function GeneratePage() {
               {selectedStructureTemplates.size === STRUCTURE_TEMPLATES.length ? '取消全选' : '全选'}
             </button>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '12px' }}>
+          <div className="demo-template-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '12px' }}>
             {STRUCTURE_TEMPLATES.map(tpl => {
               const isSelected = selectedStructureTemplates.has(tpl.key);
               const isPreviewing = previewingTemplate === tpl.key;
@@ -1913,7 +1913,7 @@ export default function GeneratePage() {
                   <button onClick={() => { setEditingContent(selectedChapterContent); setContentViewMode('edit'); }} style={{ padding: '4px 10px', fontSize: '12px', border: '1px solid var(--color-border)', borderLeft: 'none', borderRadius: '0 4px 4px 0', cursor: 'pointer', background: contentViewMode === 'edit' ? '#d97706' : 'white', color: contentViewMode === 'edit' ? 'white' : 'var(--color-text)' }}>
                     <Edit3 size={12} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }} />编辑
                   </button>
-                  <button onClick={() => { if (!selectedProjectId) return; window.open(`/api/projects/${selectedProjectId}/export/word`, '_blank'); }} style={{ padding: '4px 10px', fontSize: '12px', border: '1px solid #059669', borderRadius: '4px', cursor: 'pointer', background: '#ecfdf5', color: '#059669', marginLeft: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <button onClick={() => { if (!selectedProjectId) return; if (import.meta.env.VITE_STATIC_DEMO === 'true') { window.dispatchEvent(new CustomEvent('duncan-demo-blocked', { detail: '在线演示不生成 Word 投标书。' })); return; } window.open(`/api/projects/${selectedProjectId}/export/word`, '_blank'); }} style={{ padding: '4px 10px', fontSize: '12px', border: '1px solid #059669', borderRadius: '4px', cursor: 'pointer', background: '#ecfdf5', color: '#059669', marginLeft: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <Download size={12} /> 下载Word文档
                   </button>
                 </div>

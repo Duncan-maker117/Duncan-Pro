@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { staticDemoAdapter } from './staticDemo';
 
 const api = axios.create({
   baseURL: '/api',
@@ -9,7 +10,10 @@ const api = axios.create({
   },
 });
 
+if (import.meta.env.VITE_STATIC_DEMO === 'true') api.defaults.adapter = staticDemoAdapter;
+
 api.interceptors.request.use((config) => {
+  if (import.meta.env.VITE_STATIC_DEMO === 'true') return config;
   const token = localStorage.getItem('bidmaster_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -52,6 +56,12 @@ export interface SSEHandlers {
 }
 
 export function streamSSE(url: string, handlers: SSEHandlers): SSEController {
+  if (import.meta.env.VITE_STATIC_DEMO === 'true') {
+    const detail = '在线演示不运行 AI 生成；请部署完整平台后使用。';
+    window.dispatchEvent(new CustomEvent('duncan-demo-blocked', { detail }));
+    queueMicrotask(() => { handlers.onError?.(new Error(detail)); handlers.onClose?.(); });
+    return { cancel: () => {} };
+  }
   const token = localStorage.getItem('bidmaster_token');
   const controller = new AbortController();
 

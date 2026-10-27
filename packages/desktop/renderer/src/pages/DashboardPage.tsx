@@ -137,7 +137,7 @@ export default function DashboardPage() {
         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '18px' }}>
+      <div className="demo-metrics-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '18px' }}>
         {[
           { icon: FolderOpen, label: '总项目', value: totalProjects, color: '#1a56db', bg: '#eff6ff' },
           { icon: Activity, label: '进行中', value: inProgressProjects, color: '#059669', bg: '#ecfdf5' },
@@ -177,7 +177,7 @@ export default function DashboardPage() {
                 {(() => { const I = pipelineSteps[Math.min(currentStep, 3)].icon; return <I size={15} color="white" />; })()}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div ref={pickerRef} style={{ position: 'relative', display: 'inline-block' }}>
+                <div ref={pickerRef} className="demo-project-picker" style={{ position: 'relative', display: 'inline-block' }}>
                   <button
                     onClick={() => setProjectPickerOpen(v => !v)}
                     style={{
@@ -433,7 +433,7 @@ export default function DashboardPage() {
         )}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '18px' }}>
+      <div className="demo-dashboard-columns" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '18px' }}>
         <div style={{
           background: 'var(--color-surface)', borderRadius: '14px', padding: '18px',
           border: '1px solid var(--color-border)',

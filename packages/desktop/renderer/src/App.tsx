@@ -14,6 +14,8 @@ function PublicOnlyRoute({ children }: { children: React.ReactNode }) {
   const token = useAppStore((s) => s.token);
   const hydrated = useAppStore((s) => s._hydrated);
 
+  if (import.meta.env.VITE_STATIC_DEMO === 'true') return <Navigate to="/dashboard" replace />;
+
   if (!hydrated) {
     const lsToken = localStorage.getItem('bidmaster_token');
     if (lsToken) {

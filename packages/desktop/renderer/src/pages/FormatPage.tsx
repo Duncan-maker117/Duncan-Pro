@@ -891,7 +891,7 @@ export default function FormatPage() {
   };
 
   const renderFormatTab = () => (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+    <div className="demo-format-columns" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
       <div style={{ background: 'var(--color-surface)', borderRadius: '12px', padding: '24px', border: '1px solid var(--color-border)' }}>
         <h3 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '16px' }}>输入源</h3>
 

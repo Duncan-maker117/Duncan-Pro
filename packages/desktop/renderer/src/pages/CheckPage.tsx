@@ -915,7 +915,7 @@ export default function CheckPage() {
   const renderProjectSelector = () => (
     <div style={{ background: 'var(--color-surface)', borderRadius: '12px', padding: '24px', border: '1px solid var(--color-border)', marginBottom: '20px' }}>
       <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px' }}>选择项目</h3>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <div className="demo-check-selector" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
         <select
           value={selectedProjectId}
           onChange={(e) => { setSelectedProjectId(e.target.value); setSelectedChapterId(''); setChapterContent(''); }}
@@ -1071,7 +1071,7 @@ export default function CheckPage() {
   );
 
   const renderCheckOptionsGrid = () => (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '10px', marginBottom: '20px' }}>
+    <div className="demo-check-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '10px', marginBottom: '20px' }}>
       {checkOptions.map(opt => {
         const needsTender = ['compliance', 'disqualification', 'mandatoryReq', 'crossCheck', 'fitScore'].includes(opt.key);
         const disabled = checkMode === 'upload' && needsTender && !tenderFile;
